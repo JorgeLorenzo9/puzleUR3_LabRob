@@ -1,0 +1,71 @@
+%% LÍNEAS PARA LA INICIALIZACIÓN DE LA CÁMARA 
+imaqreset; % Reinicia el hardware de adquisición de video
+disp(imaqhwinfo);
+
+info = imaqhwinfo('winvideo'); % Cambia 'winvideo' si estás en Linux u otro sistema
+disp(info.DeviceInfo); % Esto mostrará todas las cámaras detectadas
+
+% Iniciar cámara
+cam = videoinput('winvideo', 2); % Usa el ID correspondiente
+set(cam, 'ReturnedColorSpace', 'rgb');
+
+%% ALGORITMO DETECCIÓN DE VARIAS PIEZAS VISTAS POR LA CÁMARA Y CENTROIDE
+
+% Captura la imagen desde la cámara
+%AreaTrabajo = getsnapshot(cam); 
+AreaTrabajo = imread("puzleVERDE.jpg");
+
+ATgray = rgb2gray(AreaTrabajo);
+ATbin = imbinarize(ATgray, 'global'); 
+ATlabel = bwlabel(not(ATbin));
+
+% Inicializar el array para los centroides
+centroides = [];
+
+figure()
+imshow(label2rgb(ATlabel))
+colormap(gca,[0 0 0;colorcube])
+hold on
+
+for k = 1:max(ATlabel(:))
+    if bwarea(ATlabel == k) >= 900  % Filtrar por área mínima
+        ob = (ATlabel == k);        % Máscara binaria del objeto con etiqueta k
+        [y, x] = find(ob);          % Coordenadas de los píxeles del objeto
+        cx = mean(x);               % Centroide X
+        cy = mean(y);               % Centroide Y
+
+        % Añadir el centroide al array
+        centroides = [centroides; cx, cy];
+
+        % Mostrar visualmente en la imagen
+        plot(cx, cy, 'r*', 'MarkerSize', 10, 'LineWidth', 1.5)
+        text(cx + 5, cy, sprintf('(%0.0f, %0.0f)', cx, cy), 'Color', 'r', 'FontSize', 12)
+    end
+end
+
+%% ROBOT SE MUEVE A PIEZAS POR ORDEN SEGÚN CENTROIDES GUARDADOS
+
+tamVentana = 100; % Tamaño de media ventana (ajústalo al tamaño típico de una pieza)
+
+for i = 1:size(centroides, 1)
+    cx = round(centroides(i,1));
+    cy = round(centroides(i,2));
+
+    % Definir los límites de la ventana con seguridad para no salirte de la imagen
+    x1 = max(cx - tamVentana, 1);
+    x2 = min(cx + tamVentana, size(AreaTrabajo, 2));
+    y1 = max(cy - tamVentana, 1);
+    y2 = min(cy + tamVentana, size(AreaTrabajo, 1));
+
+    % Recorta la región de interés
+    pieza = AreaTrabajo(y1:y2, x1:x2, :);
+
+    % Mostrar la pieza individual (o hacer análisis aquí)
+    figure
+    imshow(pieza)
+    title(sprintf('Pieza %d en (%d, %d)', i, cx, cy))
+
+    % Aquí podrías hacer tu análisis: color, forma, comparación, etc.
+end
+
+
