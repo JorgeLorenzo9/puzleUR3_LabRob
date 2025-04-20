@@ -6,11 +6,11 @@ vision_output_piece_number = None     # número de pieza (1 a 9)
 vision_output_rotation = None         # ángulo en grados (o radianes)
 
 # =================== ENTRADAS DE UR3 ===================
-ur3_current_cartesian = (0, 0, 0, 0, 0, 0)  # (x, y, z, yaw, pitch, roll)
+ur3_target_cartesian = None   # (x, y, z, yaw, pitch, roll)
 ur3_gripper_status = False  # True: sujeta, False: suelta
 
 # =================== SALIDAS A UR3 ===================
-ur3_target_cartesian = None   # (x, y, z, yaw, pitch, roll)
+ur3_current_cartesian = (0, 0, 0, 0, 0, 0)  # (x, y, z, yaw, pitch, roll)
 ur3_gripper_command = None    # True: cerrar, False: abrir
 
 # =================== PARÁMETROS DEFINIDOS ===================
