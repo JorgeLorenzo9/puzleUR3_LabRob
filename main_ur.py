@@ -1,35 +1,18 @@
 # main.py
 from ur3_module import UR3Module
 import time
+import shared_data
 
 def main():
-    # Create an instance of the UR3Module
     ur3 = UR3Module()
-
-    # Define a target pose [x, y, z, rx, ry, rz]
-    target_pose = [0.3, 0.2, 0.4, 0, 3.14, 0]  # Example pose
-
-    # Move the robot to the target pose
-    ur3.move_to(target_pose, speed=0.5, acceleration=0.3)
-
-    # Wait for a moment to ensure the movement is complete
-    time.sleep(2)
-
-    # Activate the gripper (vacuum ON)
-    ur3.set_gripper(True)
-
-    # Wait a bit
-    time.sleep(1)
-
-    # Move to another position
-    second_pose = [0.2, 0.1, 0.3, 0, 3.14, 0]
-    ur3.move_to(second_pose, speed=0.5, acceleration=0.3)
-
-    # Wait again
-    time.sleep(2)
-
-    # Deactivate the gripper (vacuum OFF)
-    ur3.set_gripper(False)
-
+    target_pose =  shared_data.HOME
+    ur3.move_to(target_pose)
+    time.sleep(2)  
+    ur3.move_to([0.08466545884173958, 0.2863416203890516, 0.158529264767416, -1.2254897161735516, -1.1406743714057417, 1.2107779703462462])
+    time.sleep(2)  
+    ur3.set_gripper(True)  
+    time.sleep(2)  
+    ur3.move_to(target_pose)
+    # ur3.set_gripper(False)  
 if __name__ == "__main__":
     main()
