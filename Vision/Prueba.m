@@ -26,10 +26,10 @@ MaxRatio=0.15;
 MatchThresholdHamming=10.0;
 MaxRatioHamming=0.4;
 
-%ESTOS PAR¡METROS NO SON NECESARIAMENTE LOS M¡S ADECUADOS.
-%SON PAR¡METROS DE DEMOSTRACI”N.
-%CADA APLICACI”N PUEDE REQUERIR UNOS PAR¡METROS CONCRETOS
-%SEG⁄N LA DENSIDAD DE PUNTOS REQUERIDOS.
+%ESTOS PAR√ÅMETROS NO SON NECESARIAMENTE LOS M√ÅS ADECUADOS.
+%SON PAR√ÅMETROS DE DEMOSTRACI√ìN.
+%CADA APLICACI√ìN PUEDE REQUERIR UNOS PAR√ÅMETROS CONCRETOS
+%SEG√öN LA DENSIDAD DE PUNTOS REQUERIDOS.
 
 
 
@@ -144,7 +144,7 @@ DibujaDisparidad(puntosMatchSURF,im1,im2,1,'SURF. Disparidad Puntos casados');
 %ALGORITMO KAZE
 %Similar a SURF, pero empleando la funcion
 %   detectKAZEFeatures()
-%Cuando se detectan muchos puntos, la funciÛn 
+%Cuando se detectan muchos puntos, la funci√≥n 
 %   matchFeatures()
 %puede dar problemas de falta de memoria
 
@@ -206,7 +206,7 @@ DibujaDisparidad(puntosMatchHARRIS,im1,im2,1,'HARRIS. Disparidad Puntos casados'
 %ALGORITMO ORB
 %Similar a HARRIS, pero empleando la funcion
 %   detectORBFeatures()
-%Cuando se detectan muchos puntos, la funciÛn 
+%Cuando se detectan muchos puntos, la funci√≥n 
 %   matchFeatures()
 %puede dar problemas de falta de memoria
 
