@@ -109,31 +109,81 @@ class PuzzleUR3App:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        label = ttk.Label(self.root, text=f"Resolviendo Puzzle {self.selected_puzzle} - Vista de cámara en tiempo real",
-                          font=("Helvetica", 16))
-        label.pack(pady=10)
-
-        self.video_label = tk.Label(self.root)
-        self.video_label.pack()
-
-        self.cap = cv2.VideoCapture(0)  # Captura desde la primera cámara USB
         self.running = True
 
-        # Hilo para actualizar el feed de cámara
-        threading.Thread(target=self.update_camera_feed).start()
+        # Frame general con 2 columnas: cámara (izquierda) + cuadrícula (derecha)
+        main_frame = tk.Frame(self.root)
+        main_frame.pack(fill="both", expand=True)
 
+        # === CÁMARA ===
+        camera_frame = tk.Frame(main_frame)
+        camera_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
+
+        camera_label = ttk.Label(camera_frame, text=f"Resolviendo Puzzle {self.selected_puzzle} - Cámara")
+        camera_label.pack()
+
+        self.video_label = tk.Label(camera_frame)
+        self.video_label.pack()
+
+        self.cap = cv2.VideoCapture(0)
+        threading.Thread(target=self.update_camera_feed, daemon=True).start()
+
+        # === CUADRÍCULA DE PIEZAS ===
+        grid_frame = tk.Frame(main_frame)
+        grid_frame.grid(row=0, column=1, padx=30, pady=10)
+
+        grid_title = ttk.Label(grid_frame, text="Progreso del Puzzle", font=("Helvetica", 14))
+        grid_title.pack()
+
+        self.piece_frames = []
+        self.piece_imgs = []
+
+        grid_container = tk.Frame(grid_frame)
+        grid_container.pack()
+
+        for i in range(3):
+            for j in range(3):
+                piece_label = tk.Label(grid_container, width=100, height=100, borderwidth=2, relief="solid")
+                piece_label.grid(row=i, column=j, padx=5, pady=5)
+                self.piece_frames.append(piece_label)
+                self.piece_imgs.append(None)
+
+        # Botón salir
         exit_button = ttk.Button(self.root, text="Salir", command=self.exit_app)
         exit_button.pack(pady=10)
+    def update_puzzle_grid(self, pieza_id):
+        """
+        Actualiza la imagen correspondiente a la celda del puzzle resuelto.
+        :param pieza_id: int de 1 a 9
+        """
+        if not (1 <= pieza_id <= 9):
+            print(f"ID de pieza inválido: {pieza_id}")
+            return
+
+        index = pieza_id - 1
+        try:
+            img = Image.open(f"piezas/pieza{pieza_id}.jpg")
+            img = img.resize((100, 100), Image.ANTIALIAS)
+            img_tk = ImageTk.PhotoImage(img)
+
+            self.piece_frames[index].configure(image=img_tk)
+            self.piece_frames[index].image = img_tk  # Referencia para evitar recolección de basura
+            print(f"Pieza {pieza_id} colocada en la cuadrícula.")
+        except Exception as e:
+            print(f"Error cargando pieza {pieza_id}: {e}")
+
 
     def update_camera_feed(self):
         while self.running:
             ret, frame = self.cap.read()
             if ret:
+                frame = cv2.resize(frame, (320, 240))  # Tamaño reducido
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 img = Image.fromarray(frame)
                 imgtk = ImageTk.PhotoImage(image=img)
                 self.video_label.imgtk = imgtk
                 self.video_label.configure(image=imgtk)
+
 
     def exit_app(self):
         self.running = False

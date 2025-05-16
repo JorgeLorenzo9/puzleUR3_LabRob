@@ -4,6 +4,8 @@
 vision_output_pixel_coords = None     # (x, y) en píxeles
 vision_output_piece_number = None     # número de pieza (1 a 9)
 vision_output_rotation = None         # ángulo en grados (o radianes)
+# =================== ENTRADAS Y SALIDAS DE INTERFAZ===================
+puzzle_selection = None #numero de puzzle que ha elegido el usuario para revolver
 
 # =================== ENTRADAS DE UR3 ===================
 ur3_target_cartesian = None   # (x, y, z, yaw, pitch, roll)
