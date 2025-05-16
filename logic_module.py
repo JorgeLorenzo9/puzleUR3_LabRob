@@ -18,7 +18,7 @@ class LogicModule:
     def run_state_machine(self):
         if self.estado == 1:
             print("[LOGIC] Estado 1: Volver a HOME")
-            self.ur3.move_to((0, 0, shared_data.altura_home, 0, 0, 0))
+            self.ur3.move_to(shared_data.HOME)
             self.estado = 2
 
         elif self.estado == 2:
@@ -48,7 +48,7 @@ class LogicModule:
         elif self.estado == 6:
             print("[LOGIC] Estado 6: Bajando a coger pieza")
             x, y, _, yaw, pitch, roll = self.target_coords
-            z_coger = shared_data.altura_home - shared_data.altura_coger_pieza
+            z_coger = shared_data.z_catch
             self.ur3.move_to((x, y, z_coger, yaw, pitch, roll))
             self.ur3.set_gripper(True)
             self.estado = 7
