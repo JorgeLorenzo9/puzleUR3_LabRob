@@ -1,14 +1,38 @@
 # ur3_module.py
 import shared_data
+import rtde_control
+import rtde_receive
+import rtde_io
+import time
 
 class UR3Module:
     def __init__(self):
+
+        self.rtde_c = rtde_control.RTDEControlInterface('169.254.12.20')
+        self.rtde_r = rtde_receive.RTDEReceiveInterface('169.254.12.20')
+        self.rtde_io = rtde_io.RTDEIOInterface('169.254.12.20')
         self.current_pose = shared_data.ur3_current_cartesian
+        self.target_pose = shared_data.ur3_target_cartesian
+        self.gripper_status = shared_data.ur3_gripper_status
+        # Parameters
+        self.speed = 0.5        # Speed in rad/s
+        self.acceleration = 0.3 # Acceleration in rad/s^2
 
     def move_to(self, target_pose):
-        shared_data.ur3_current_cartesian = target_pose
-        print(f"[UR3] Moviendo a coordenadas: {target_pose}")
+        self.target_pose = target_pose
+        self.current_pose = self.rtde_r.getActualTCPPose()
+        joint_positions = self.rtde_c.getInverseKinematics(target_pose)
+        if joint_positions:
+            self.rtde_c.moveJ(joint_positions, self.speed, self.acceleration)
+            self.current_pose = self.rtde_r.getActualTCPPose() # pose in cartesian coordinates [x, y, z, rx, ry, rz]
+
+        else:
+            print("[UR3] No se pudo calcular la cinemática inversa para el target pose.")
 
     def set_gripper(self, status):
-        shared_data.ur3_gripper_status = status
-        print(f"[UR3] Ventosa {'ACTIVADA' if status else 'DESACTIVADA'}")
+        self.gripper_status = status
+        if status:
+            self.rtde_io.setStandardDigitalOut(4, True) 
+        else:
+            self.rtde_io.setStandardDigitalOut(4, False) 
+     
