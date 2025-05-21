@@ -8,14 +8,14 @@ import time
 class UR3Module:
     def __init__(self):
 
-        self.rtde_c = rtde_control.RTDEControlInterface('169.254.12.20')
-        self.rtde_r = rtde_receive.RTDEReceiveInterface('169.254.12.20')
-        self.rtde_io = rtde_io.RTDEIOInterface('169.254.12.20')
+        self.rtde_c = rtde_control.RTDEControlInterface('169.254.12.28')
+        self.rtde_r = rtde_receive.RTDEReceiveInterface('169.254.12.28')
+        self.rtde_io = rtde_io.RTDEIOInterface('169.254.12.28')
         self.current_pose = shared_data.ur3_current_cartesian
         self.target_pose = shared_data.ur3_target_cartesian
         self.gripper_status = shared_data.ur3_gripper_status
         # Parameters
-        self.speed = 0.5        # Speed in rad/s
+        self.speed = 0.3        # Speed in rad/s
         self.acceleration = 0.3 # Acceleration in rad/s^2
 
     def move_to(self, target_pose):
@@ -34,5 +34,26 @@ class UR3Module:
         if status:
             self.rtde_io.setStandardDigitalOut(4, True) 
         else:
-            self.rtde_io.setStandardDigitalOut(4, False) 
+            self.rtde_io.setStandardDigitalOut(4, False)
+
+    def rotate(self):
+        self.move_to(shared_data.rotate_arriba)
+        self.move_to(shared_data.rotate_abajo)
+        self.set_gripper(False)
+        self.move_to(shared_data.rotate_arriba)
+        self.move_to(shared_data.coger_arriba)
+        self.move_to(shared_data.coger_abajo)
+        self.set_gripper(True)
+        self.move_to(shared_data.coger_arriba)
+    
+    def move_to_final_position(self,path, return_path):
+        for wp in path:
+            self.move_to(wp)
+    
+        self.set_gripper(False)
+        for wp in return_path:
+            self.move_to(wp)
      
+    def get_actual_pose(self):
+        self.current_pose = self.rtde_r.getActualTCPPose()
+        return self.current_pose
