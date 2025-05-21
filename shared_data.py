@@ -1,4 +1,5 @@
 # shared_data.py
+selected_puzzle = None
 
 # =================== ENTRADAS Y SALIDAS DE VISIÓN ===================
 vision_output_pixel_coords = None     # (x, y) en píxeles

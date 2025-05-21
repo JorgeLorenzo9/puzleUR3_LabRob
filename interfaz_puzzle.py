@@ -3,10 +3,17 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import cv2
 import threading
+import shared_data
+from logic_module import LogicModule
+
 
 # Clase principal
 class PuzzleUR3App:
     def __init__(self, root):
+        self.logic = LogicModule()
+        self.logic_thread = threading.Thread(target=self.run_logic, daemon=True)
+        self.logic_thread.start()
+
         self.root = root
         self.root.title("Resolviendo puzzle con UR3")
         self.root.geometry("800x600")
@@ -102,8 +109,10 @@ class PuzzleUR3App:
 
     def select_puzzle(self, puzzle_number):
         self.selected_puzzle = puzzle_number
+        shared_data.selected_puzzle = puzzle_number  # ← Guardar en variable compartida
         print(f"Puzzle {puzzle_number} seleccionado")
         self.show_camera_feed()
+
 
     def show_camera_feed(self):
         for widget in self.root.winfo_children():
@@ -184,12 +193,20 @@ class PuzzleUR3App:
                 self.video_label.imgtk = imgtk
                 self.video_label.configure(image=imgtk)
 
+    def run_logic(self):
+        import time
+        while True:
+            self.logic.run_state_machine()
+            time.sleep(1)
+
 
     def exit_app(self):
         self.running = False
         if hasattr(self, 'cap'):
             self.cap.release()
         self.root.destroy()
+
+
 
 # Ejecutar la aplicación
 if __name__ == "__main__":
