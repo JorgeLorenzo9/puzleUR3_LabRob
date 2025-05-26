@@ -1,24 +1,18 @@
-# main.py
-from vision_module import VisionModule
 from logic_module import LogicModule
-from ur3_module import UR3Module
-import time
-import shared_data
 
-import time
+def main():
+    # Crear instancia de la lógica principal
+    logic = LogicModule()
+
+    # Definir coordenadas del centroide en píxeles (ejemplo)
+    centroide_px = (553, 95)
+
+    # Llamar a la función para convertir píxeles a coordenadas del robot
+    pose = logic.pixel_to_mm(553,95)
+
+    # (La función ya imprime la pose internamente)
+    # Si quieres usarla directamente con el robot:
+    # logic.ur3.move_to(pose)
 
 if __name__ == "__main__":
-    vision = VisionModule()
-    logic = LogicModule()
-    ur3 = UR3Module()
-    # Simulamos una detección manual
-    #vision.detectar_pieza(pieza_num=3, pixel_x=640, pixel_y=360, rotacion=45)
-
-    pos= logic.pixel_to_mm (553,95)
-    
-    ur3.move_to(pos)
-
-    # Ejecutamos la máquina de estados
-    for _ in range(20):
-        logic.run_state_machine()
-        time.sleep(1)  # Pausa entre estados
+    main()

@@ -1,18 +1,17 @@
 # logic_module.py
 import shared_data
-from ur3_module import UR3Module
 from vision_module import VisionModule
 
 import numpy as np
 import cv2 
 
-class LogicModule:
+class LogicModule:   
     def __init__(self):
-        self.estado = 0  # Cambiamos el estado inicial
-        self.ur3 = UR3Module()
+        self.estado = 0
         self.vision = VisionModule()
-        self.tipo_puzzle = None  # Se definirá desde la interfaz
+        self.tipo_puzzle = None
 
+    @staticmethod
     def pixel_to_mm(pixel_coords):
         """
         Transforma coordenadas de píxeles (pixel_coords) a coordenadas en milímetros
@@ -58,74 +57,15 @@ class LogicModule:
         # Extraer las coordenadas en mm
         x_m, y_m = transformed_point[0][0]
         pose = (x_m,y_m,0.1585, -1.2254897161735516, -1.1406743714057417, 1.2107779703462462)
-      
+      # Imprimir la pose calculada
+        print(f"[INFO] Pose generada para píxel {pixel_coords}:")
+        print(f"       x = {x_m:.6f} m")
+        print(f"       y = {y_m:.6f} m")
+        print(f"       z = 0.158500 m")
+        print(f"       rx = -1.225490 rad")
+        print(f"       ry = -1.140674 rad")
+        print(f"       rz = 1.210778 rad\n")
         return pose 
 
 
-    def run_state_machine(self):
-        def run_state_machine(self):
-            if shared_data.selected_puzzle is None:
-                return  # Esperar a que el usuario seleccione un puzzle desde la interfaz
-
-        if self.estado == 1:
-            print("[LOGIC] Estado 1: Volver a HOME")
-            self.ur3.move_to(shared_data.HOME)
-            self.vision.detectar_pieza()
-            self.estado = 2
-
-
-        elif self.estado == 2:
-            if shared_data.vision_output_pixel_coords is not None:
-                print("[LOGIC] Estado 2: Conversión píxeles a mm")
-                x_mm, y_mm = self.pixel_to_mm(shared_data.vision_output_pixel_coords)
-                self.target_coords = (x_mm, y_mm, shared_data.altura_home, 0, 0, 0)
-                self.estado = 3
-
-        elif self.estado == 3:
-            print("[LOGIC] Estado 3: Movimiento a posición pieza")
-            self.ur3.move_to(self.target_coords)
-            self.estado = 4
-
-        elif self.estado == 4:
-            print("[LOGIC] Estado 4: Recibiendo número y rotación")
-            # Aqui se le llamaria a la segunda función de visión donde nos devuelve el numero de pieza final que es y la rotación para pillarla bien
-            self.pieza_num = shared_data.vision_output_piece_number
-            self.rotacion = shared_data.vision_output_rotation
-            self.estado = 5
-
-        elif self.estado == 5:
-            print("[LOGIC] Estado 5: Rotación de muñeca")
-            if self.rotacion != 0:
-                print(f"[LOGIC] Rotando muñeca a {self.rotacion}° (simulado)")
-                # añadir moviemiento de rotar 
-                # habria uqe llamar a la funcion de vision para saber si es correcto la cara o no sino es corecto vuelve a rotar 
-            self.estado = 6
-
-        elif self.estado == 6:
-            print("[LOGIC] Estado 6: Bajando a coger pieza")
-            x, y, _, yaw, pitch, roll = self.target_coords
-            z_coger = shared_data.z_catch
-            self.ur3.move_to((x, y, z_coger, yaw, pitch, roll))
-            self.ur3.set_gripper(True)
-            self.estado = 7
-
-        elif self.estado == 7:
-            print("[LOGIC] Estado 7: Posicionar en área solución")
-            dx, dy = shared_data.area_solucion["positions"][self.pieza_num]
-            origin_x, origin_y = shared_data.area_solucion["corner_origin_mm"]
-            destino = (origin_x + dx, origin_y + dy, shared_data.altura_home, 0, 0, 0)
-            self.ur3.move_to(destino)
-            self.estado = 8
-
-        elif self.estado == 8:
-            print("[LOGIC] Estado 8: Soltando pieza")
-            z_bajar = shared_data.altura_home - shared_data.altura_coger_pieza
-            self.ur3.move_to((destino[0], destino[1], z_bajar, 0, 0, 0))
-            self.ur3.set_gripper(False)
-            self.estado = 9
-
-        elif self.estado == 9:
-            print("[LOGIC] Estado 9: Volver a HOME")
-            self.ur3.move_to((0, 0, shared_data.altura_home, 0, 0, 0))
-            print("[LOGIC] Reiniciando ciclo")
-            self.estado = 1
+   
