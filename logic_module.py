@@ -3,6 +3,9 @@ import shared_data
 from ur3_module import UR3Module
 from vision_module import VisionModule
 
+import numpy as np
+import cv2 
+
 class LogicModule:
     def __init__(self):
         self.estado = 0  # Cambiamos el estado inicial
@@ -26,18 +29,18 @@ class LogicModule:
 
         # Coordenadas de las 4 esquinas del área de trabajo en la imagen (en píxeles)
         pixel_points = [
-            (120, 340),   # esquina superior izquierda
-            (980, 320),   # esquina superior derecha
-            (1000, 720),  # esquina inferior derecha
-            (100, 740)    # esquina inferior izquierda
+            (597, 440),   # esquina superior izquierda
+            (196, 445),   # esquina superior derecha
+            (195, 45),  # esquina inferior derecha
+            (600, 40)    # esquina inferior izquierda
         ]
 
         # Coordenadas físicas reales correspondientes (en milímetros)
         real_points = [
-            (0.0, 0.0),       # esquina superior izquierda
-            (300.0, 0.0),     # esquina superior derecha
-            (300.0, 200.0),   # esquina inferior derecha
-            (0.0, 200.0)      # esquina inferior izquierda
+            (0.20199798160382304, 0.476085595716464),       # esquina superior izquierda
+            (0.20199798160382304, 0.476085595716464),     # esquina superior derecha
+            (-0.03233289065041634, 0.2984046079386768),   # esquina inferior derecha
+            (-0.01500268344637711, 0.49672099354183596)      # esquina inferior izquierda
         ]
 
         # Conversión a arrays tipo float32
@@ -53,8 +56,10 @@ class LogicModule:
         transformed_point = cv2.perspectiveTransform(point, homography_matrix)
 
         # Extraer las coordenadas en mm
-        x_mm, y_mm = transformed_point[0][0]
-        return (x_mm, y_mm)
+        x_m, y_m = transformed_point[0][0]
+        pose = (x_m,y_m,0.1585, -1.2254897161735516, -1.1406743714057417, 1.2107779703462462)
+      
+        return pose 
 
 
     def run_state_machine(self):
