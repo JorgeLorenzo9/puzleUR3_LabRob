@@ -13,6 +13,8 @@ class PuzzleUR3App:
         self.logic = LogicModule()
         self.logic_thread = threading.Thread(target=self.run_logic, daemon=True)
         self.logic_thread.start()
+        self.logic_thread_started = False
+
 
         self.root = root
         self.root.title("Resolviendo puzzle con UR3")
@@ -156,6 +158,13 @@ class PuzzleUR3App:
                 piece_label.grid(row=i, column=j, padx=5, pady=5)
                 self.piece_frames.append(piece_label)
                 self.piece_imgs.append(None)
+
+
+        # Lógica: arrancar máquina de estados una vez seleccionada la cámara
+        if not hasattr(self, 'logic_thread_started'):
+            self.logic_thread_started = True
+            self.logic_thread = threading.Thread(target=self.run_logic, daemon=True)
+            self.logic_thread.start()
 
         # Botón salir
         exit_button = ttk.Button(self.root, text="Salir", command=self.exit_app)
