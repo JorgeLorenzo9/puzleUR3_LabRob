@@ -37,15 +37,24 @@ class UR3Module:
             self.rtde_io.setStandardDigitalOut(4, False)
 
     def rotate(self):
-        self.move_to(shared_data.rotate_arriba)
-        self.move_to(shared_data.rotate_abajo)
-        self.set_gripper(False)
-        self.move_to(shared_data.rotate_arriba)
-        self.move_to(shared_data.coger_arriba)
-        self.move_to(shared_data.coger_abajo)
         self.set_gripper(True)
-        self.move_to(shared_data.coger_arriba)
-    
+        self.move_to(shared_data.mirrar_arriba)
+        self.move_to(shared_data.coger_en_caja)
+        self.set_gripper(False)
+        self.move_to(shared_data.mirrar_arriba)
+        self.move_to(shared_data.no_chocar)
+        self.move_to(shared_data.rot_medio)
+        self.move_to(shared_data.rot_coger)
+        
+        self.set_gripper(True)
+        self.move_to(shared_data.no_chocar_2)
+        self.move_to(shared_data.echarse_atras)
+        self.move_to(shared_data.no_chocar)
+        self.move_to(shared_data.mirrar_arriba)
+        self.move_to(shared_data.coger_en_caja)
+        self.set_gripper(False)
+        self.move_to(shared_data.mirrar_arriba)
+        
     def move_to_final_position(self,path, return_path):
         for wp in path:
             self.move_to(wp)
