@@ -54,6 +54,16 @@ class UR3Module:
         self.move_to(shared_data.coger_en_caja)
         self.set_gripper(False)
         self.move_to(shared_data.mirrar_arriba)
+    
+    def catch_puzzle(self):
+        self.move_to(shared_data.coger_en_caja)
+        self.set_gripper(True)
+        self.move_to(shared_data.mirrar_arriba)
+    def leave_puzzle(self):
+        self.move_to(shared_data.mirrar_arriba)
+        self.move_to(shared_data.coger_en_caja)
+        self.set_gripper(False)
+        self.move_to(shared_data.mirrar_arriba)
         
     def move_to_final_position(self,path, return_path):
         for wp in path:
