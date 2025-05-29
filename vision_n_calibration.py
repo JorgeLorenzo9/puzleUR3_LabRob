@@ -37,7 +37,7 @@ class VisionModule:
 
     def detectar_pieza(self, pieza_num=None, pixel_x=None, pixel_y=None, rotacion=0):
         # Captura desde la cámara
-        cap = cv2.VideoCapture(1)
+        cap = cv2.VideoCapture(0)
 
         if not cap.isOpened():
             print("Error: no se pudo acceder a la cámara.")
@@ -52,6 +52,7 @@ class VisionModule:
 
         # Convertir a RGB (OpenCV usa BGR por defecto)
         image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
 
         plt.figure("Paso 1 - Imagen original")
         plt.imshow(image_rgb)
