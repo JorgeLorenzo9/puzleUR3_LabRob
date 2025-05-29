@@ -1,5 +1,6 @@
 # main.py
-from vision_module import VisionModule
+#from vision_module import VisionModule
+from vision_n_calibration import VisionModule
 import shared_data
 
 def main():
@@ -19,7 +20,7 @@ def main():
     #for cx, cy in shared_data.vision_output_pixel_coords:
         # Suponiendo que el robot ya se ha posicionado en (cx, cy)
     #input("Pulsa ENTER cuando el robot esté listo para capturar la pieza...")
-    vision.comparar_con_puzzle_completo()
+    # vision.comparar_con_puzzle_completo()
 
 
 
