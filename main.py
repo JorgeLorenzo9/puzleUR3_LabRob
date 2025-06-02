@@ -5,7 +5,6 @@ from logic_module import LogicModule
 import time
 
 if __name__ == "__main__":
-    vision = VisionModule()
     logic = LogicModule()
 
 

@@ -25,9 +25,9 @@ class VisionModule:
         )
         self.matcher = cv2.BFMatcher()
 
-    def detectar_pieza(self, pieza_num=None, pixel_x=None, pixel_y=None, rotacion=0):
+    def detectar_pieza(self, pieza_num=None, pixel_x=None, pixel_y=None, rotacion=0)->bool:
         # Captura desde la cámara
-        cap = cv2.VideoCapture(1)
+        cap = cv2.VideoCapture(2)
 
         if not cap.isOpened():
             print("Error: no se pudo acceder a la cámara.")
@@ -113,6 +113,9 @@ class VisionModule:
 
             # Verificar que esté suficientemente alejado de los ya seleccionados
             cercano = False
+            # print(centroides)
+            # centroide_px = centroides[0]
+            # centroides_py = centroides[1]
             for (px, py) in centroides:
                 if abs(cx - px) < 70 and abs(cy - py) < 70:
                     cercano = True
@@ -147,29 +150,39 @@ class VisionModule:
                 # u, v = 142, 191
 
                 # Calcular posición en el espacio
-                x = (a1 * cx + a2 * cy + intercept_x -20) /100
-                y = (b1 * cx + b2 * cy + intercept_y +25)/100
+                x = (a1 * cx + a2 * cy + intercept_x ) /1000
+                y = (b1 * cx + b2 * cy + intercept_y)/1000
 
-                centroides.append((x, y,-0.19,0,0,0))
-
+                # centroides.append((x, y,-0.19,0,0,0))
+                centroides.append((x, y))
+                centroides_shared = centroides
+                # centroides_shared.append((x, y,-0.19,0,0,0))
                 # Mostrar resultados
-                print(f"x = {x:.6f} m")
-                print(f"y = {y:.6f} m")
-
+                # print(f"x = {x:.6f} m")
+                # print(f"y = {y:.6f} m")
+            print(len(centroides))
             if len(centroides) == 9:
-                break  # Alcanzado el máximo
+                shared_data.centroides_robot = centroides_shared
+                shared_data.vision_output_piece_number = pieza_num
+                shared_data.vision_output_rotation = rotacion
 
+                # print(f"Centroides detectados: {centroides}")
+
+                # plt.show()
+                return True  # Alcanzado el máximo
+            
+        
 
         
 
-        # Guardar los datos
-        shared_data.centroides_robot = centroides
-        shared_data.vision_output_piece_number = pieza_num
-        shared_data.vision_output_rotation = rotacion
+        # # Guardar los datos
+        # shared_data.centroides_robot = centroides_shared
+        # shared_data.vision_output_piece_number = pieza_num
+        # shared_data.vision_output_rotation = rotacion
 
-        print(f"Centroides detectados: {centroides}")
+        # print(f"Centroides detectados: {centroides}")
 
-        plt.show()
+        # plt.show()
 
     
     def comparar_con_puzzle_completo(self, pieza_num=None):
@@ -258,7 +271,7 @@ class VisionModule:
                         pieza_num = 8
                     elif col + 1 == 3:
                         pieza_num = 9
-                shared_data.vision_output_face_correcta = True        
+                # shared_data.vision_output_face_correcta = True        
                 shared_data.numero_pieza_actual= pieza_num
                 # Mostrar coincidencias
                 img_matches = cv2.drawMatches(imagen_pieza, kp1, self.imagen_puzzle_completo, kp2, good_matches, None, flags=2)
@@ -266,7 +279,9 @@ class VisionModule:
                 cv2.waitKey(0)
                 cv2.destroyAllWindows()
 
-                return (int(x_aprox), int(y_aprox), casilla)
+                # return (int(x_aprox), int(y_aprox), casilla)
+                print(pieza_num)
+                return pieza_num
             else:
                 print("No se pudo calcular la homografía.")
                 shared_data.vision_output_face_correcta = False 

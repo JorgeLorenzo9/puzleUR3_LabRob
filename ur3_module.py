@@ -8,9 +8,9 @@ import time
 class UR3Module:
     def __init__(self):
 
-        self.rtde_c = rtde_control.RTDEControlInterface('169.254.12.28')
-        self.rtde_r = rtde_receive.RTDEReceiveInterface('169.254.12.28')
-        self.rtde_io = rtde_io.RTDEIOInterface('169.254.12.28')
+        self.rtde_c = rtde_control.RTDEControlInterface("169.254.12.28")
+        self.rtde_r = rtde_receive.RTDEReceiveInterface("169.254.12.28")
+        self.rtde_io = rtde_io.RTDEIOInterface("169.254.12.28")
         self.current_pose = shared_data.ur3_current_cartesian
         self.target_pose = shared_data.ur3_target_cartesian
         self.gripper_status = shared_data.ur3_gripper_status

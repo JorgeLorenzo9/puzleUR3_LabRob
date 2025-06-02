@@ -1,12 +1,14 @@
 # shared_data.py
 # =================== PARÁMETROS DE INICIO ===================
 HOME = [0.08466545884173958, 0.2863416203890516, 0.3500529264767416, -1.2254897161735516, -1.1406743714057417, 1.2107779703462462]
+HOME_abajo = [0.08466545884173958, 0.2863416203890516, 0.178529264767416 , -1.2254897161735516, -1.1406743714057417, 1.2107779703462462]
+
 # =================== COORDENADAS ============================
 z_catch = 0.158529264767416  # mm
 # =================== ENTRADAS Y SALIDAS DE VISIÓN ===================
 vision_output_piece_number = None     # número de pieza (1 a 9)
 vision_output_rotation = None         # ángulo en grados (o radianes)
-vision_output_face_correcta = True
+vision_output_face_correcta = False
 centroides_robot = []   # clave: número de pieza (1-9), valor: lista tipo HOME
 num_piezas_colocadas = 0
 numero_pieza_actual = 0 # Lista de centroides (cada uno es una tupla de 6 elementos)
