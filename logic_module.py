@@ -32,11 +32,10 @@ class LogicModule:
 
         elif self.estado == 2:
             print("Detectando piezas ")
-            centroides_pix = self.vision.detectar_piezas()
             print("conviertiendo pixeles a m ")
-            vision.convertir_centroides_a_robot(centroides_pix)
+            self.vision.detectar_pieza()
             if len(shared_data.centroides_robot) == 9:
-                estado = 3
+                self.estado = 3
                 print("Conversión completada correctamente. Estado actualizado a 3.")
             else:
                 print("Error: no se han convertido los 9 centroides.")
@@ -81,7 +80,7 @@ class LogicModule:
 
         elif self.estado == 5:
             print("Comprobando si la cara es la correcta")
-            self.vision.es_cara_correcta()
+            self.vision.comparar_con_puzzle_completo
 
             if shared_data.vision_output_face_correcta:
                 print("La cara de la pieza es la correcta. Avanzando al estado 7.")
