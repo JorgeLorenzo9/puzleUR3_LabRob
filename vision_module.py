@@ -119,12 +119,48 @@ class VisionModule:
                     break
 
             if not cercano:
-                centroides.append((cx, cy))
+                
                 ax.plot(cx, cy, 'r*', markersize=10)
                 ax.text(cx + 5, cy, f"({cx}, {cy})", color='red', fontsize=10)
 
+                modelo = {
+                    "coef_x": [
+                        0.0301261460888152,
+                        -0.5024140146130534
+                    ],
+                    "intercept_x": 189.61912556597025,
+                    "coef_y": [
+                        -0.505946641559293,
+                        0.0289523269904209
+                    ],
+                    "intercept_y": 508.06783211157216,
+                    "z_fija": -0.19
+                }
+
+                # Extraer coeficientes
+                a1, a2 = modelo["coef_x"]
+                b1, b2 = modelo["coef_y"]
+                intercept_x = modelo["intercept_x"]
+                intercept_y = modelo["intercept_y"]
+
+                # Coordenadas en píxeles
+                # u, v = 142, 191
+
+                # Calcular posición en el espacio
+                x = (a1 * cx + a2 * cy + intercept_x -20) /100
+                y = (b1 * cx + b2 * cy + intercept_y +25)/100
+
+                centroides.append((x, y,-0.19,0,0,0))
+
+                # Mostrar resultados
+                print(f"x = {x:.6f} m")
+                print(f"y = {y:.6f} m")
+
             if len(centroides) == 9:
                 break  # Alcanzado el máximo
+
+
+        
 
         # Guardar los datos
         shared_data.vision_output_pixel_coords = centroides
@@ -136,7 +172,7 @@ class VisionModule:
         plt.show()
 
     
-    def comparar_con_puzzle_completo(self):
+    def comparar_con_puzzle_completo(self, pieza_num=None):
         cap = cv2.VideoCapture(1)
 
         if not cap.isOpened():
@@ -201,7 +237,29 @@ class VisionModule:
 
                 print(f"La pieza corresponde aproximadamente a la casilla: {casilla} (fila {row + 1}, columna {col + 1})")
 
-
+                if row+1 == 1:
+                    if col + 1 == 1:
+                        pieza_num = 1
+                    elif col + 1 == 2:
+                        pieza_num = 2
+                    elif col + 1 == 3:
+                        pieza_num = 3
+                if row+1 == 2:
+                    if col + 1 == 1:
+                        pieza_num = 4
+                    elif col + 1 == 2:
+                        pieza_num = 5
+                    elif col + 1 == 3:
+                        pieza_num = 6
+                if row+1 == 3:
+                    if col + 1 == 1:
+                        pieza_num = 7
+                    elif col + 1 == 2:
+                        pieza_num = 8
+                    elif col + 1 == 3:
+                        pieza_num = 9
+                        
+                shared_data.vision_output_piece_number = pieza_num
                 # Mostrar coincidencias
                 img_matches = cv2.drawMatches(imagen_pieza, kp1, self.imagen_puzzle_completo, kp2, good_matches, None, flags=2)
                 cv2.imshow("Coincidencias entre pieza y puzle completo", img_matches)
