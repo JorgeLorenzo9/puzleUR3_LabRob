@@ -7,6 +7,10 @@ z_catch = 0.158529264767416  # mm
 vision_output_pixel_coords = None     # (x, y) en píxeles
 vision_output_piece_number = None     # número de pieza (1 a 9)
 vision_output_rotation = None         # ángulo en grados (o radianes)
+vision_output_face_correcta = True
+centroides_robot = {}  # clave: número de pieza (1-9), valor: lista tipo HOME
+num_piezas_colocadas = 0
+numero_pieza_actual = 0
 
 # =================== ENTRADAS DE UR3 ===================
 ur3_target_cartesian = None   # (x, y, z, yaw, pitch, roll)
@@ -85,7 +89,7 @@ path_8_return = [pos_8_arriba,intermediate_pos]
 path_9 = [intermediate_pos, pos_9_arriba, pos_9]
 path_9_return = [pos_9_arriba,intermediate_pos]
 
-num_piezas_colocadas = 0
+
 
 # =================== MOVIMIENTOS rotar UR3 ===================
 mirrar_arriba = [-0.13134197452954344, 0.3455670013097921, 0.3159726644935425, -1.0821565601153795, -1.2296092388557256, 1.2678467730063692]
