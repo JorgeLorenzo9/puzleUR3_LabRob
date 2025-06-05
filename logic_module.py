@@ -54,6 +54,12 @@ class LogicModule:
          
             print("Volviendo a HOME. Preparando para siguiente detección.")
             self.estado = 2
+        
+        elif self.estado == 99:
+            print("[LOGIC] Estado 99: PARADA DE EMERGENCIA")
+            print("Robot detenido por el usuario. Esperando instrucciones.")
+            # Aquí podrías apagar motores, desactivar nodos, enviar flags de parada, etc.
+
             
 
 
