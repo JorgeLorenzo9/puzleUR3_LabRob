@@ -1,5 +1,6 @@
 # main.py
 from ur3_module import UR3Module
+from vision_module import VisionModule
 import time
 import shared_data
 import shared_data
@@ -8,8 +9,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage.measure import label, regionprops
 def main():
-    # ur3 = UR3Module()
-    # ur3.move_to(shared_data.HOME)
+    ur3 = UR3Module()
+    mirraz_puzzle = [-0.13673873456936142, 0.27734496123085284, 0.2751934240055127, -1.214052291499628, -1.1079593817250402, 1.2113744366474313]
+    ur3.move_to(mirraz_puzzle)
     # ur3.move_to([0.08466545884173958, 0.2863416203890516, 0.158529264767416 , -1.2254897161735516, -1.1406743714057417, 1.2107779703462462])
     # ur3.set_gripper(True)
     # ur3.move_to(shared_data.HOME)
@@ -20,17 +22,16 @@ def main():
     # #aqui tengo que decirle si se va a l aposición del puzzle o no 
     # ur3.move_to_final_position(shared_data.path_1, shared_data.path_1_return)
     # ur3.move_to(shared_data.HOME)
-    cap = cv2.VideoCapture(1)
+    #cam = VisionModule()
+    #print(f"cam_detetcta {cam.comparar_con_puzzle_completo()}")
+
+    cap = cv2.VideoCapture(2)
     ret, frame = cap.read()
     cap.release()
 
     image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-    plt.figure("Paso 1 - Imagen original")
     plt.imshow(image_rgb)
-    plt.title("Imagen original (RGB)")
-    plt.axis('off')
-
+    plt.show()
 
     
     # ur3.rotate()

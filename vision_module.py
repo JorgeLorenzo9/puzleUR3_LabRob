@@ -9,10 +9,12 @@ class VisionModule:
 
         # Cargar imagen del puzle completo una sola vez
         self.imagen_puzzle_completo = cv2.imread("PuzleAzulCOMPLETO.jpg", cv2.IMREAD_COLOR_RGB)
+        #plt.imshow(self.imagen_puzzle_completo)
+        #plt.show()
         if self.imagen_puzzle_completo is None:
             print("Error: no se pudo cargar la imagen del puzle completo.")
         else:
-            print("Imagen del puzle completo cargada correctamente.")
+            print("[VISION] Imagen del puzle completo cargada correctamente.")
 
         # Puedes cambiar a cv2.SIFT_create() si tienes OpenCV contrib y lo prefieres
         self.detector = cv2.ORB_create(
@@ -25,9 +27,10 @@ class VisionModule:
         )
         self.matcher = cv2.BFMatcher()
 
-    def detectar_pieza(self, pieza_num=None, pixel_x=None, pixel_y=None, rotacion=0)->bool:
+    def detectar_pieza(self)->bool:
         # Captura desde la cámara
         cap = cv2.VideoCapture(2)
+        print("[VISION] Imagen capturada para analisis")
         if not cap.isOpened():
             print("Error: no se pudo acceder a la cámara.")
             return
@@ -42,18 +45,18 @@ class VisionModule:
         # Convertir a RGB (OpenCV usa BGR por defecto)
         image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        plt.figure("Paso 1 - Imagen original")
-        plt.imshow(image_rgb)
-        plt.title("Imagen original (RGB)")
-        plt.axis('off')
+        # plt.figure("Paso 1 - Imagen original")
+        # plt.imshow(image_rgb)
+        # plt.title("Imagen original (RGB)")
+        # plt.axis('off')
 
         # Recorte (si es necesario)
         img_crop = image_rgb
 
-        plt.figure("Paso 2 - Imagen recortada")
-        plt.imshow(img_crop)
-        plt.title("Imagen recortada")
-        plt.axis('off')
+        # plt.figure("Paso 2 - Imagen recortada")
+        # plt.imshow(img_crop)
+        # plt.title("Imagen recortada")
+        # plt.axis('off')
 
         # Conversión a HSV
         img_crop_bgr = cv2.cvtColor(img_crop, cv2.COLOR_RGB2BGR)
@@ -64,33 +67,33 @@ class VisionModule:
         upper_bound = np.array([180, 195, 255])
         mask = cv2.inRange(hsv_img, lower_bound, upper_bound)
 
-        plt.figure("Paso 3 - Máscara HSV")
-        plt.imshow(mask, cmap='gray')
-        plt.title("Máscara tras umbral HSV")
-        plt.axis('off')
+        # plt.figure("Paso 3 - Máscara HSV")
+        # plt.imshow(mask, cmap='gray')
+        # plt.title("Máscara tras umbral HSV")
+        # plt.axis('off')
 
         # Erosión y dilatación
         kernel_erode = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8, 8))
         kernel_dilate = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (12, 12))
 
         im_erode = cv2.erode(mask, kernel_erode, iterations=1)
-        plt.figure("Paso 4 - Erosión")
-        plt.imshow(im_erode, cmap='gray')
-        plt.title("Erosión")
-        plt.axis('off')
+        # plt.figure("Paso 4 - Erosión")
+        # plt.imshow(im_erode, cmap='gray')
+        # plt.title("Erosión")
+        # plt.axis('off')
 
         im_fill = cv2.dilate(im_erode, kernel_dilate, iterations=1)
-        plt.figure("Paso 5 - Dilatación")
-        plt.imshow(im_fill, cmap='gray')
-        plt.title("Dilatación")
-        plt.axis('off')
+        # plt.figure("Paso 5 - Dilatación")
+        # plt.imshow(im_fill, cmap='gray')
+        # plt.title("Dilatación")
+        # plt.axis('off')
 
         # Binarización
         im_bin = im_fill > 127
-        plt.figure("Paso 6 - Imagen binarizada")
-        plt.imshow(im_bin, cmap='gray')
-        plt.title("Imagen binarizada")
-        plt.axis('off')
+        #plt.figure("Paso 6 - Imagen binarizada")
+        #plt.imshow(im_bin, cmap='gray')
+        #plt.title("Imagen binarizada")
+        #plt.axis('off')
 
         # Etiquetado y propiedades
         labels = label(im_bin)
@@ -102,6 +105,8 @@ class VisionModule:
         ax.imshow(img_crop)
         ax.set_title("Paso 7 - Centroides detectados")
         ax.axis('off')
+
+
 
         for prop in props:
             if prop.area < 1500:
@@ -151,18 +156,18 @@ class VisionModule:
 
                 centroides.append((x, y))
                 centroides_shared = centroides
-    
+            
             if len(centroides) == 9:
+                print("[VISION] Los 9 centroides has sido detectados correctamente")
+                plt.show()
                 shared_data.centroides_robot = centroides_shared
-                shared_data.vision_output_piece_number = pieza_num
-                shared_data.vision_output_rotation = rotacion
-
                 return True  # Alcanzado el máximo
             
     
-    def comparar_con_puzzle_completo(self, pieza_num=None)-> float:
+    def comparar_con_puzzle_completo(self)-> float:
+        print("[VISION]  HEMOS ENTRADO EN COMPARAR PUZLE !! ")
         cap = cv2.VideoCapture(2)
-
+        
         if not cap.isOpened():
             print("Error: no se pudo acceder a la cámara.")
             return 0
@@ -176,20 +181,25 @@ class VisionModule:
 
         # Convertir a escala de grises
         imagen_pieza = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        print("Imagen de la pieza a comparar")
+        plt.imshow(imagen_pieza)
+        plt.show()
+
+        # CORTAR IMAGEN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
 
         # Detectar y describir características
         kp1, des1 = self.detector.detectAndCompute(imagen_pieza, None)
         kp2, des2 = self.detector.detectAndCompute(self.imagen_puzzle_completo, None)
 
         if des1 is None or des2 is None:
-            print("No se encontraron descriptores suficientes.")
+            print("[VISION] No se encontraron descriptores suficientes.")
             return 0
 
         # Matching usando KNN y ratio test de Lowe
         matches = self.matcher.knnMatch(des1, des2, k=2)
         good_matches = [m for m, n in matches if m.distance < 0.75 * n.distance]
 
-        print(f"Número de coincidencias válidas: {len(good_matches)}")
+        print(f"[VISION] Número de coincidencias válidas: {len(good_matches)}")
 
         # Calcular posición si hay suficientes coincidencias
         if len(good_matches) > 10:
@@ -209,7 +219,7 @@ class VisionModule:
                 centro_transformado = cv2.perspectiveTransform(centro_pieza, M)
                 x_aprox, y_aprox = centro_transformado[0][0]
 
-                print(f"Posición aproximada de la pieza en el puzle completo: ({int(x_aprox)}, {int(y_aprox)})")
+                print(f"[VISION] Posición aproximada de la pieza en el puzle completo: ({int(x_aprox)}, {int(y_aprox)})")
 
                 h_total, w_total = self.imagen_puzzle_completo.shape[:2]
                 col = int(x_aprox // (w_total / 3))
@@ -222,7 +232,7 @@ class VisionModule:
                 # Cálculo de casilla (1 a 9)
                 casilla = row * 3 + col + 1
 
-                print(f"La pieza corresponde aproximadamente a la casilla: {casilla} (fila {row + 1}, columna {col + 1})")
+                print(f"[VISION] La pieza corresponde aproximadamente a la casilla: {casilla} (fila {row + 1}, columna {col + 1})")
 
                 if row+1 == 1:
                     if col + 1 == 1:
@@ -245,25 +255,29 @@ class VisionModule:
                         pieza_num = 8
                     elif col + 1 == 3:
                         pieza_num = 9
-     
+
+                print("[VISION] Numero pieza asignado")
                 shared_data.numero_pieza_actual= pieza_num
+                print("[VISION] Numero pieza asignado en share_data")
                 # Mostrar coincidencias
                 img_matches = cv2.drawMatches(imagen_pieza, kp1, self.imagen_puzzle_completo, kp2, good_matches, None, flags=2)
-                cv2.imshow("Coincidencias entre pieza y puzle completo", img_matches)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
+                #plt.imshow(img_matches)
+                #plt.show()
+                # cv2.waitKey(0)
+                # cv2.destroyAllWindows()
 
-                print(f"num pieza: {pieza_num}")
+                print(f"[VISON] num pieza: {pieza_num}")
                 return pieza_num
             else:
-                print("No se pudo calcular la homografía.")
+                print("[VISION] No se pudo calcular la homografía.")
                 return 0
                 
         else:
-            print("No hay suficientes coincidencias válidas.")
+            print("[VISION] No hay suficientes coincidencias válidas.")
             img_matches = cv2.drawMatches(imagen_pieza, kp1, self.imagen_puzzle_completo, kp2, good_matches, None, flags=2)
             cv2.imshow("Coincidencias entre pieza y puzle completo", img_matches)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
+
 
             return 0
