@@ -9,9 +9,11 @@ z_catch = 0.158529264767416  # mm
 vision_output_piece_number = None     # número de pieza (1 a 9)
 vision_output_rotation = None         # ángulo en grados (o radianes)
 vision_output_face_correcta = False
-centroides_robot = []   # clave: número de pieza (1-9), valor: lista tipo HOME
+centroides_robot = []   # clave: número de pieza (1-9), valor: lista tipo HOMEç
 num_piezas_colocadas = 0
 numero_pieza_actual = 0 # Lista de centroides (cada uno es una tupla de 6 elementos)
+
+num_puzzle = 0;
 
 # =================== ENTRADAS DE UR3 ===================
 ur3_target_cartesian = None   # (x, y, z, yaw, pitch, roll)
@@ -22,7 +24,6 @@ ur3_current_cartesian = (0, 0, 0, 0, 0, 0)  # (x, y, z, yaw, pitch, roll)
 ur3_gripper_command = None    # True: cerrar, False: abrir
 
 # =================== PARÁMETROS DEFINIDOS ===================
-# Resolución cámara
 
 
 altura_home = 300  # mm
