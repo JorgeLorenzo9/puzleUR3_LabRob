@@ -15,8 +15,8 @@ class UR3Module:
         self.target_pose = shared_data.ur3_target_cartesian
         self.gripper_status = shared_data.ur3_gripper_status
         # Parameters
-        self.speed = 0.3        # Speed in rad/s
-        self.acceleration = 0.3 # Acceleration in rad/s^2
+        self.speed = 0.6        # Speed in rad/s
+        self.acceleration = 0.4 # Acceleration in rad/s^2
 
     def move_to(self, target_pose):
         self.target_pose = target_pose

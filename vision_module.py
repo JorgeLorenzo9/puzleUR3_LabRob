@@ -8,7 +8,8 @@ class VisionModule:
     def __init__(self):
 
         # Cargar imagen del puzle completo una sola vez
-        self.imagen_puzzle_completo = cv2.imread("PuzleAzulCOMPLETO.jpg", cv2.IMREAD_COLOR_RGB)
+        #self.imagen_puzzle_completo = cv2.imread("PuzleAzulCOMPLETO.jpg", cv2.IMREAD_COLOR_RGB)
+        self.imagen_puzzle_completo = cv2.imread("PuzleAzulCOMPLETO_recortado.jpg")
         #plt.imshow(self.imagen_puzzle_completo)
         #plt.show()
         if self.imagen_puzzle_completo is None:
@@ -18,14 +19,16 @@ class VisionModule:
 
         # Puedes cambiar a cv2.SIFT_create() si tienes OpenCV contrib y lo prefieres
         self.detector = cv2.ORB_create(
-            nfeatures=3000,
-            scaleFactor=1.1,         # Escala entre niveles en la pirámide
-            nlevels=12,               # Número de niveles en la pirámide
-            edgeThreshold=15,        # Distancia al borde para evitar bordes de imagen
-            patchSize=15,            # Tamaño del parche para descriptores
-            fastThreshold=10         # Umbral del detector FAST
+            nfeatures=8000,
+            scaleFactor=1.05,         # Escala entre niveles en la pirámide
+            nlevels=16,               # Número de niveles en la pirámide
+            edgeThreshold=31,        # Distancia al borde para evitar bordes de imagen
+            patchSize=31,            # Tamaño del parche para descriptores
+            fastThreshold=5         # Umbral del detector FAST
         )
         self.matcher = cv2.BFMatcher()
+
+        self.casillas_visitadas = set()
 
     def detectar_pieza(self)->bool:
         # Captura desde la cámara
@@ -179,13 +182,15 @@ class VisionModule:
             print("Error: no se pudo capturar la imagen.")
             return 0
 
+        x,y,w,h = 90, 90, 360, 360
+        frame = frame[y:y+h, x:x+w]
+    
         # Convertir a escala de grises
-        imagen_pieza = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        imagen_pieza = frame
+        #imagen_pieza = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         print("Imagen de la pieza a comparar")
         plt.imshow(imagen_pieza)
         plt.show()
-
-        # CORTAR IMAGEN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
 
         # Detectar y describir características
         kp1, des1 = self.detector.detectAndCompute(imagen_pieza, None)
@@ -197,7 +202,7 @@ class VisionModule:
 
         # Matching usando KNN y ratio test de Lowe
         matches = self.matcher.knnMatch(des1, des2, k=2)
-        good_matches = [m for m, n in matches if m.distance < 0.75 * n.distance]
+        good_matches = [m for m, n in matches if m.distance < 0.8 * n.distance]
 
         print(f"[VISION] Número de coincidencias válidas: {len(good_matches)}")
 
@@ -257,12 +262,17 @@ class VisionModule:
                         pieza_num = 9
 
                 print("[VISION] Numero pieza asignado")
+                if pieza_num in self.casillas_visitadas:
+                    print("YA VISITADA, REINTENTAR")
+                    return self.comparar_con_puzzle_completo()
+                
+                self.casillas_visitadas.add(pieza_num)
                 shared_data.numero_pieza_actual= pieza_num
                 print("[VISION] Numero pieza asignado en share_data")
                 # Mostrar coincidencias
                 img_matches = cv2.drawMatches(imagen_pieza, kp1, self.imagen_puzzle_completo, kp2, good_matches, None, flags=2)
-                #plt.imshow(img_matches)
-                #plt.show()
+                plt.imshow(img_matches)
+                plt.show()
                 # cv2.waitKey(0)
                 # cv2.destroyAllWindows()
 

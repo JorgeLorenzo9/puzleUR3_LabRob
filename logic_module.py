@@ -50,7 +50,7 @@ class LogicModule:
             # ur3.move_to([0.08466545884173958, 0.2863416203890516, 0.158529264767416 , -1.2254897161735516, -1.1406743714057417, 1.2107779703462462])
             # if pieza_id in shared_data.centroides_robot:
             print(shared_data.centroides_robot[pieza_id][0],shared_data.centroides_robot[pieza_id][1])
-            target_pose_up = [shared_data.centroides_robot[pieza_id][0],shared_data.centroides_robot[pieza_id][1], 0.178529264767416 ,-1.2254897161735516, -1.1406743714057417, 1.2107779703462462]
+            target_pose_up = [shared_data.centroides_robot[pieza_id][0],shared_data.centroides_robot[pieza_id][1], 0.168529264767416 ,-1.2254897161735516, -1.1406743714057417, 1.2107779703462462]
             target_pose_up_up = [shared_data.centroides_robot[pieza_id][0],shared_data.centroides_robot[pieza_id][1], 0.2500529264767416,-1.2254897161735516, -1.1406743714057417, 1.2107779703462462]
             # target_pose_up = [shared_data.centroides_robot[pieza_id][0],shared_data.centroides_robot[pieza_id][1], 0.168529264767416 ,-1.2254897161735516, -1.1406743714057417, 1.2107779703462462]
             target_pose_down = [shared_data.centroides_robot[pieza_id][0],shared_data.centroides_robot[pieza_id][1], 0.158529264767416 ,-1.2254897161735516, -1.1406743714057417, 1.2107779703462462]
@@ -62,7 +62,7 @@ class LogicModule:
             self.ur3.move_to(target_pose_down)
             print("Moviendo a target_pose_down")
             self.ur3.set_gripper(True)
-            self.ur3.move_to(target_pose_up_up)
+            self.ur3.move_to(target_pose_up)
             self.ur3.move_to(shared_data.HOME)
             # else:
             print(f"No hay información de la pieza número {pieza_id}")
@@ -79,8 +79,9 @@ class LogicModule:
     
         elif self.estado == 4:
             print("[LOGIC] Estado 4")
-            print("Llevando a la zona de rotación")
+            print("[LOGIC] Llevando a la zona de rotación")
             self.ur3.leave_puzzle()
+            print("[LOGIC] Dejado el puzle")
             self.estado = 5
             # # actual_pose = np.array(self.ur3.get_actual_pose())
             # target_pose = np.array(shared_data.mirraz_puzzle)
@@ -100,6 +101,7 @@ class LogicModule:
             if shared_data.numero_pieza_actual != 0:
                 print("[LOGIC] La cara de la pieza es la correcta. Avanzando al estado 6.")
                 self.ur3.catch_puzzle()
+                print("Se ha checho catch puzzle")
                 self.estado = 6
             else:
                 print("[LOGIC] Cara incorrecta. Girando la pieza...")
