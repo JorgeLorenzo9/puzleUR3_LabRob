@@ -10,7 +10,7 @@ vision_output_piece_number = None     # número de pieza (1 a 9)
 vision_output_rotation = None         # ángulo en grados (o radianes)
 vision_output_face_correcta = False
 centroides_robot = []   # clave: número de pieza (1-9), valor: lista tipo HOME
-num_piezas_colocadas = 3
+num_piezas_colocadas = 0
 numero_pieza_actual = 0 # Lista de centroides (cada uno es una tupla de 6 elementos)
 
 # =================== ENTRADAS DE UR3 ===================

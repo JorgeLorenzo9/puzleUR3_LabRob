@@ -9,7 +9,7 @@ class VisionModule:
 
         # Cargar imagen del puzle completo una sola vez
         #self.imagen_puzzle_completo = cv2.imread("PuzleAzulCOMPLETO.jpg", cv2.IMREAD_COLOR_RGB)
-        self.imagen_puzzle_completo = cv2.imread("PuzleAzulCOMPLETO_recortado_modif.png")
+        self.imagen_puzzle_completo = cv2.imread("imagenes/PuzleMoradoCOMPLETO_recortado.jpg")
         #plt.imshow(self.imagen_puzzle_completo)
         #plt.show()
         if self.imagen_puzzle_completo is None:
@@ -29,7 +29,8 @@ class VisionModule:
         self.matcher = cv2.BFMatcher()
 
         self.casillas_visitadas = set()
-
+    def __del__(self):
+        print("Se ha destruido el objeto vision")
     def detectar_pieza(self)->bool:
         # Captura desde la cámara
         cap = cv2.VideoCapture(2)
@@ -285,6 +286,4 @@ class VisionModule:
             cv2.imshow("Coincidencias entre pieza y puzle completo", img_matches)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
-
-
             return 0

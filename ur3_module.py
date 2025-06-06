@@ -17,7 +17,8 @@ class UR3Module:
         # Parameters
         self.speed = 0.9        # Speed in rad/s
         self.acceleration = 0.9 # Acceleration in rad/s^2
-
+    def __del__(self):
+        print('se ha destruido objeto ur')
     def move_to(self, target_pose):
         self.target_pose = target_pose
         self.current_pose = self.rtde_r.getActualTCPPose()

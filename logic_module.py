@@ -15,7 +15,8 @@ class LogicModule:
         self.vision = VisionModule()
         self.pose_tolerance = 0.005
 
-
+    def __del__(self):
+        print('se ha destruido el objeto logica')
     def run_state_machine(self):
 
         if self.estado == 1:
@@ -102,6 +103,7 @@ class LogicModule:
                 print(f"[LOGIC] La cara de la pieza es la correcta se corresponde con {shared_data.numero_pieza_actual}. Avanzando al estado 6.")
                 self.ur3.catch_puzzle()
                 print("Se ha checho catch puzzle")
+                print(shared_data.num_piezas_colocadas)
                 self.estado = 6
             else:
                 print("[LOGIC] Cara incorrecta. Girando la pieza...")
