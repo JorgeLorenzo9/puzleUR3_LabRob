@@ -17,6 +17,7 @@ class LogicModule:
 
 
     def run_state_machine(self):
+
         if self.estado == 1:
             print("[LOGIC] Estado 1: Volver a HOME")
             self.ur3.move_to(shared_data.HOME)
@@ -28,12 +29,16 @@ class LogicModule:
                 self.estado = 2
             else:
                 print(f"[LOGIC] Esperando a que el robot llegue a HOME... (Distancia actual: {distance:.4f} m)")
-
+                self.estado=1
 
         elif self.estado == 2:
             print("Detectando piezas ")
             print("Conviertiendo pixeles a m ")
-            if self.vision.detectar_pieza():
+            
+            # if self.vision.detectar_pieza():
+            detect=self.vision.detectar_pieza()
+            print (f"se han detectado {detect}")
+            if detect:
             # if len(shared_data.centroides_robot) == 9:
                 self.estado = 3
                 print("Conversión completada correctamente. Estado actualizado a 3.")
@@ -44,18 +49,14 @@ class LogicModule:
 
         elif self.estado == 3:
             print("[LOGIC] Estado 3: Movimiento a posición pieza")
-
+            
             # Selección del centroide correspondiente
             pieza_id = shared_data.num_piezas_colocadas + 1
-            # ur3.move_to([0.08466545884173958, 0.2863416203890516, 0.158529264767416 , -1.2254897161735516, -1.1406743714057417, 1.2107779703462462])
-            # if pieza_id in shared_data.centroides_robot:
             print(shared_data.centroides_robot[pieza_id][0],shared_data.centroides_robot[pieza_id][1])
             target_pose_up = [shared_data.centroides_robot[pieza_id][0],shared_data.centroides_robot[pieza_id][1], 0.168529264767416 ,-1.2254897161735516, -1.1406743714057417, 1.2107779703462462]
             target_pose_up_up = [shared_data.centroides_robot[pieza_id][0],shared_data.centroides_robot[pieza_id][1], 0.2500529264767416,-1.2254897161735516, -1.1406743714057417, 1.2107779703462462]
-            # target_pose_up = [shared_data.centroides_robot[pieza_id][0],shared_data.centroides_robot[pieza_id][1], 0.168529264767416 ,-1.2254897161735516, -1.1406743714057417, 1.2107779703462462]
             target_pose_down = [shared_data.centroides_robot[pieza_id][0],shared_data.centroides_robot[pieza_id][1], 0.158529264767416 ,-1.2254897161735516, -1.1406743714057417, 1.2107779703462462]
             self.ur3.move_to(shared_data.HOME_abajo)
-            #target_pose_up_up = [shared_data.centroides_robot[pieza_id][0],shared_data.centroides_robot[pieza_id][1], 0.198529264767416 ,-1.2254897161735516, -1.1406743714057417, 1.2107779703462462]
             print("Moviendo a HOME_abajo")
             self.ur3.move_to(target_pose_up)
             print("Moviendo a target_pose_up")
@@ -63,13 +64,11 @@ class LogicModule:
             print("Moviendo a target_pose_down")
             self.ur3.set_gripper(True)
             self.ur3.move_to(target_pose_up)
+            # self.ur3.move_to(target_pose_up_up)
             self.ur3.move_to(shared_data.HOME)
-            # else:
-            print(f"No hay información de la pieza número {pieza_id}")
-                # Aquí podrías regresar a estado 2 para redetectar o terminar ejecución si ya se han movido todas
+  
             actual_pose = np.array(self.ur3.get_actual_pose())
-            target_pose = np.array(shared_data.HOME)
-            distance = np.linalg.norm(actual_pose[:3] - target_pose[:3])  # Compara solo x,y,z
+            distance = np.linalg.norm(actual_pose[:3] - shared_data.HOME[:3])  # Compara solo x,y,z
             if distance <= self.pose_tolerance:
                 print("[LOGIC] Robot ha llegado a HOME. Avanzando al estado 4.")
                 self.estado = 4
@@ -83,6 +82,7 @@ class LogicModule:
             self.ur3.leave_puzzle()
             print("[LOGIC] Dejado el puzle")
             self.estado = 5
+            print(f"estado: {self.estado}")
             # # actual_pose = np.array(self.ur3.get_actual_pose())
             # target_pose = np.array(shared_data.mirraz_puzzle)
             # # distance = np.linalg.norm(actual_pose[:3] - target_pose[:3])  # Compara solo x,y,z
@@ -99,7 +99,7 @@ class LogicModule:
             #self.vision.comparar_con_puzzle_completo = shared_data.numero_pieza_actual
             shared_data.numero_pieza_actual= self.vision.comparar_con_puzzle_completo()
             if shared_data.numero_pieza_actual != 0:
-                print("[LOGIC] La cara de la pieza es la correcta. Avanzando al estado 6.")
+                print(f"[LOGIC] La cara de la pieza es la correcta se corresponde con {shared_data.numero_pieza_actual}. Avanzando al estado 6.")
                 self.ur3.catch_puzzle()
                 print("Se ha checho catch puzzle")
                 self.estado = 6
@@ -117,8 +117,7 @@ class LogicModule:
             print("[LOGIC] Estado 6")
             print("[LOGIC] Llevando la pieza a su sitio")
             numero_pieza = shared_data.numero_pieza_actual
-            print(numero_pieza)
-
+            print(f"numero_pieza es {numero_pieza}")
 
             if 1 <= numero_pieza <= 9:
                 # Construimos dinámicamente el nombre del path correspondiente
@@ -126,8 +125,8 @@ class LogicModule:
                 path_forward = getattr(shared_data, f'path_{numero_pieza}')
                 path_return = getattr(shared_data, f'path_{numero_pieza}_return')
                 self.ur3.move_to_final_position(path_forward, path_return)
-                self.ur3.set_gripper(False)
                 shared_data.num_piezas_colocadas += 1
+                print(f"El numero de piezas colocadas: {shared_data.num_piezas_colocadas}")
                 self.estado = 7
 
         elif self.estado == 7:
@@ -135,7 +134,9 @@ class LogicModule:
                 # Aún quedan piezas: ir a HOME y volver al estado 2
                 self.ur3.move_to(shared_data.HOME)
                 print("Volviendo a HOME. Preparando para siguiente detección.")
+                print(f"{self.estado} antes de cambiar")
                 self.estado = 3
+                print(f"{self.estado} despues de cambiar")
             else:
                 # Todas las piezas colocadas
                 print("Puzzle completado correctamente. Todas las piezas han sido colocadas.")

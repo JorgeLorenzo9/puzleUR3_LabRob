@@ -15,8 +15,8 @@ class UR3Module:
         self.target_pose = shared_data.ur3_target_cartesian
         self.gripper_status = shared_data.ur3_gripper_status
         # Parameters
-        self.speed = 0.6        # Speed in rad/s
-        self.acceleration = 0.4 # Acceleration in rad/s^2
+        self.speed = 0.9        # Speed in rad/s
+        self.acceleration = 0.9 # Acceleration in rad/s^2
 
     def move_to(self, target_pose):
         self.target_pose = target_pose
@@ -57,6 +57,7 @@ class UR3Module:
     
     def catch_puzzle(self):
         self.move_to(shared_data.mirraz_puzzle_arriba)
+        self.move_to(shared_data.mirrar_arriba)
         self.move_to(shared_data.coger_en_caja)
         self.set_gripper(True)
         self.move_to(shared_data.mirrar_arriba)

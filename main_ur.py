@@ -11,7 +11,8 @@ from skimage.measure import label, regionprops
 def main():
     ur3 = UR3Module()
     mirraz_puzzle = [-0.13673873456936142, 0.27734496123085284, 0.2751934240055127, -1.214052291499628, -1.1079593817250402, 1.2113744366474313]
-    ur3.move_to(shared_data.HOME)
+    # ur3.move_to(shared_data.HOME)
+    ur3.set_gripper(False)
     # ur3.move_to([0.08466545884173958, 0.2863416203890516, 0.158529264767416 , -1.2254897161735516, -1.1406743714057417, 1.2107779703462462])
     # ur3.set_gripper(True)
     # ur3.move_to(shared_data.HOME)
@@ -29,7 +30,7 @@ def main():
     ret, frame = cap.read()
     cap.release()
 
-    image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    image_rgb = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
     plt.imshow(image_rgb)
     plt.show()
 

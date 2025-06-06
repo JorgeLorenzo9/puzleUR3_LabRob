@@ -9,7 +9,7 @@ class VisionModule:
 
         # Cargar imagen del puzle completo una sola vez
         #self.imagen_puzzle_completo = cv2.imread("PuzleAzulCOMPLETO.jpg", cv2.IMREAD_COLOR_RGB)
-        self.imagen_puzzle_completo = cv2.imread("PuzleAzulCOMPLETO_recortado.jpg")
+        self.imagen_puzzle_completo = cv2.imread("PuzleAzulCOMPLETO_recortado_modif.png")
         #plt.imshow(self.imagen_puzzle_completo)
         #plt.show()
         if self.imagen_puzzle_completo is None:
@@ -46,7 +46,7 @@ class VisionModule:
             return
 
         # Convertir a RGB (OpenCV usa BGR por defecto)
-        image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        image_rgb = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         # plt.figure("Paso 1 - Imagen original")
         # plt.imshow(image_rgb)
@@ -109,8 +109,6 @@ class VisionModule:
         ax.set_title("Paso 7 - Centroides detectados")
         ax.axis('off')
 
-
-
         for prop in props:
             if prop.area < 1500:
                 continue
@@ -159,7 +157,6 @@ class VisionModule:
 
                 centroides.append((x, y))
                 centroides_shared = centroides
-            
             if len(centroides) == 9:
                 print("[VISION] Los 9 centroides has sido detectados correctamente")
                 plt.show()
