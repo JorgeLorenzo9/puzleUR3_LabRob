@@ -188,6 +188,10 @@ class Interfaz:
         stop_button = ttk.Button(self.root, text="🛑 PARAR", command=self.stop_robot, style="Stop.TButton")
         stop_button.place(x=1100, y=700)
 
+        # Botón de STOP abajo a la derecha
+        gripper_button = ttk.Button(self.root, text="Stop gripper", command=self.stop_robot, style="Stop.TButton")
+        gripper_button.place(x=1100, y=00)
+
         # MOSTRAR INTERFAZ PRIMERO, luego iniciar lo demás
         self.root.after(100, self.init_camera_and_threads)
 
