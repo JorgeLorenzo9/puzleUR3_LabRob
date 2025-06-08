@@ -4,26 +4,19 @@ from PIL import Image, ImageTk
 import cv2
 import threading
 
-# Clase principal
 class PuzzleUR3App:
     def __init__(self, root):
         self.root = root
         self.root.title("Resolviendo puzzle con UR3")
         self.root.geometry("800x600")
         self.selected_puzzle = None
-
-        # Inicia en la pantalla de bienvenida
         self.show_welcome_screen()
 
     def show_welcome_screen(self):
         for widget in self.root.winfo_children():
             widget.destroy()
-
-        # Crear un canvas para fondo
         self.canvas = tk.Canvas(self.root, width=800, height=600)
         self.canvas.pack(fill="both", expand=True)
-
-        # Cargar imagen de fondo (opcional)
         try:
             fondo_img = Image.open("assets/fondo_bienvenida.jpg")
             fondo_img = fondo_img.resize((800, 600))
@@ -33,7 +26,6 @@ class PuzzleUR3App:
             print(f"No se pudo cargar la imagen de fondo: {e}")
             self.canvas.configure(bg="#D6EAF8")  # Color azul claro si no hay imagen
 
-        # Texto de bienvenida
         self.canvas.create_text(
             400, 100,
             text="Bienvenido a Resolviendo Puzzle con UR3",
@@ -41,7 +33,6 @@ class PuzzleUR3App:
             fill="#154360"
         )
 
-        # Imagen decorativa (robot, puzzle, etc.)
         try:
             decor_img = Image.open("assets/robot_ur3.jpg")
             decor_img = decor_img.resize((200, 200))
@@ -50,7 +41,6 @@ class PuzzleUR3App:
         except Exception as e:
             print(f"No se pudo cargar imagen decorativa: {e}")
 
-        # Botón continuar
         continuar_btn = ttk.Button(self.root, text="Comenzar", command=self.show_puzzle_selection)
         continuar_window = self.canvas.create_window(400, 500, window=continuar_btn)
 
@@ -66,8 +56,6 @@ class PuzzleUR3App:
         frame.pack(pady=10)
 
         self.puzzle_imgs = []
-
-        # Crear 6 puzzles (2 filas de 3)
         total_puzzles = 6
         cols = 3
 
@@ -75,11 +63,9 @@ class PuzzleUR3App:
             fila = i // cols
             columna = i % cols
 
-            # Crear sub-frame para cada puzzle
             sub_frame = tk.Frame(frame)
             sub_frame.grid(row=fila, column=columna, padx=20, pady=15)
 
-            # Cargar imagen
             try:
                 img = Image.open(f"puzzles/puzzle{i+1}.jpg")
                 img = img.resize((200, 200))
@@ -89,12 +75,10 @@ class PuzzleUR3App:
                 print(f"No se pudo cargar puzzle{i+1}.jpg: {e}")
                 continue
 
-            # Botón con imagen
             btn = tk.Button(sub_frame, image=self.puzzle_imgs[i],
                             command=lambda i=i: self.select_puzzle(i+1))
             btn.pack()
 
-            # Nombre del puzzle
             lbl = tk.Label(sub_frame, text=f"Puzzle {i+1}", font=("Helvetica", 12))
             lbl.pack(pady=5)
 
@@ -116,10 +100,9 @@ class PuzzleUR3App:
         self.video_label = tk.Label(self.root)
         self.video_label.pack()
 
-        self.cap = cv2.VideoCapture(0)  # Captura desde la primera cámara USB
+        self.cap = cv2.VideoCapture(0)  
         self.running = True
 
-        # Hilo para actualizar el feed de cámara
         threading.Thread(target=self.update_camera_feed).start()
 
         exit_button = ttk.Button(self.root, text="Salir", command=self.exit_app)
@@ -140,8 +123,7 @@ class PuzzleUR3App:
         if hasattr(self, 'cap'):
             self.cap.release()
         self.root.destroy()
-
-# Ejecutar la aplicación
+        
 if __name__ == "__main__":
     root = tk.Tk()
     app = PuzzleUR3App(root)

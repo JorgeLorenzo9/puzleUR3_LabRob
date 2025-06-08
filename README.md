@@ -1,37 +1,51 @@
-# puzleUR3_LabRob
-Este repositorio ha sido creado para subir todo el material relacionado con el proyecto "Montaje de un Puzle de dimensiones conocidas a través de un manipulador UR3" de la asignatura Laboratorio de Robótica, perteneciente al Máster Universitario en Automática y Robótica
 
-En este archivo se recogen una serie de pasos para el uso de la interfaz creada para el usuario, que permite el entendimiento y manipulación de la interfaz a través de la introducción de una foto del puzle a formar.
-## Tabla de contenido
-## Arquitectura del Software
-## Clases
-- Shared_data: "Esto no es una clase como tal"
-- UR3Module():
-- VisionModule():
-- LogicModule():
-### Módulo del UR3
-- __init__(): 
-    -Se establece la conexión del robot con el sistema a traves de la ip para controlar la interfaz, recibir datos de ella y controlar las E/S.
-    - Se establecen los parametros de velocidad y aceleración.
-- move_to(target_pose): Recibe las coordenadas cartesianas "poner (x,y,z...)"donde ha de estar el efector final respecto a la base en metros "revisar", realiza la cinemática inversa transformandolas a coordenadas articulares y mueve el robot.
-- set_gripper(status): si recibe un true activa la succión del gripper y si recibe un false la desactiva.
-- rotate() mueve el robot gracias a tener almacenada la secuencia para rotar la pieza.
-- catch_puzzle(): coge la pieza de la zona de rotación.
-- leave_puzzle(): deja la pieza en la zona de rotación.
-- move_to_final_position(path, return_path): recibe dos conjuntos de puntos de paso para llevar las piezas desde la zona de rotación a su posición final, dejar la pieza y retornar a la posición intermedia.
-- get_actual_pose(): devuelve la posición del efector respecto  a la base en coordenadas cartesianas.
-### Módulo de lógica
-- __init__(): iniciamos módulos de control del UR3 y Visión
-- run_state_machine(): Máquina de estados para controlar el proceso.
-    - Estado 1: LLevar al robot a la posición de HOME
-    - Estado 2: Detectar la pieza:
-        - vision.detectar_pieza() devuelve true si ha almacenado todos los centroides (x,y) de todas las piezas del puzzle en el area de trabajo.
-        - visión actualiza la variable global centroides_robot (aqui revisar porque creo que hay variables duplicadas)
-### Módulo de visión
-- __init__(): Se carga la imagen del puzzle y se establecen los parámetros del detector.
-- detectar_pieza(self)->bool: True si detecta los 9 centroides.
-Actualiza las variable:
-    - centroides_robot: (9,2) "revisar esto que nose si se pone asi o asi (2,9)"
--comparar_con_puzzle_completo(self, pieza_num=None)-> float: devuelve el numero de la pieza a la que corresponde si pertenece a ese puzzle y 0 si la pieza no es correcta o surge cualquier otra excepción.
+# 🤖 Puzzle Solver con UR3 y Visión 
+Este repositorio ha sido creado para subir todo el material relacionado con el proyecto "Montaje de un Puzle de dimensiones conocidas a través de un manipulador UR3" de la asignatura Laboratorio de Robótica, perteneciente al Máster Universitario en Automática y Robótica.
 
-## Calibración
+![Mi foto](puzzles/Screenshot%20from%202025-06-08%2009-45-17.png)
+
+
+
+Este proyecto implementa un sistema modular en Python para resolver automáticamente un puzzle 3x3 utilizando un **robot UR3**, **visión** y control mediante **RTDE**. El sistema detecta, recoge, orienta y coloca las piezas del puzzle de forma autónoma.
+
+## 📁 Estructura del proyecto
+
+- `main.py` – Punto de entrada del sistema. Gestiona la lógica principal mediante una máquina de estados.
+- `logic.py` – Controla la secuencia de estados del proceso.
+- `robot_controller.py` – Control del robot UR3 usando RTDE.
+- `vision.py` – Procesamiento de imagen y detección de piezas.
+- `shared_data.py` – Variables globales y trayectorias predefinidas compartidas entre módulos.
+
+## ⚙️ Requisitos
+
+- Python 3.8 o superior
+- Librería RTDE (de Universal Robots)
+- OpenCV (`opencv-python`)
+- NumPy
+
+## Modo de uso
+Antes de iniciar el sistema, asegúrate de cargar en el módulo de visión una imagen del puzzle completo que se desea resolver. Esta imagen se utiliza como referencia para verificar la orientación de las piezas.
+
+Coloca las nueve piezas del puzzle en el área de trabajo, justo debajo de la posición HOME del robot UR3. Esta posición permite una vista cenital adecuada para que la cámara pueda detectar correctamente las piezas.
+
+En el archivo donde se inicializa la cámara, asegúrate de verificar y ajustar el valor en la línea:
+
+```python
+cap = cv2.VideoCapture(2)
+```
+
+El número entre paréntesis representa el índice de la cámara.Si la cámara no se activa correctamente, prueba a cambiar este valor hasta que se muestre la imagen esperada.
+
+En el módulo del robot, es necesario modificar las siguientes líneas para que coincidan con la dirección IP del UR3 que se está utilizando:
+
+```python
+self.rtde_c = rtde_control.RTDEControlInterface("169.254.12.28")
+self.rtde_r = rtde_receive.RTDEReceiveInterface("169.254.12.28")
+self.rtde_io = rtde_io.RTDEIOInterface("169.254.12.28")
+```
+Sustituye "169.254.12.28" por la IP correcta del robot UR3. Si no conoces cuál es, conecta el robot mediante un cable Ethernet directamente al ordenador y ejecuta el comando ifconfig (en Linux/macOS) o ipconfig (en Windows) para ver qué IP se asigna en la interfaz Ethernet.
+
+```
+ping <IP_DEL_UR3>
+```
+Si el código da errores por problemas de conexión, prueba a desactivar la conexión Wi-Fi y dejar únicamente activa la conexión por cable Ethernet. Esto evita conflictos de red y asegura una comunicación estable con el UR3.

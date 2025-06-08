@@ -1,11 +1,8 @@
-# main.py
+""" Módulo para realizar Pruebas Unitarias con el robot """
 from ur3_module import UR3Module
-from vision_module import VisionModule
-import time
 import shared_data
 import shared_data
 import cv2
-import numpy as np
 import matplotlib.pyplot as plt
 from skimage.measure import label, regionprops
 def main():
@@ -23,8 +20,6 @@ def main():
     # #aqui tengo que decirle si se va a l aposición del puzzle o no 
     # ur3.move_to_final_position(shared_data.path_1, shared_data.path_1_return)
     # ur3.move_to(shared_data.HOME)
-    #cam = VisionModule()
-    #print(f"cam_detetcta {cam.comparar_con_puzzle_completo()}")
 
     cap = cv2.VideoCapture(2)
     ret, frame = cap.read()

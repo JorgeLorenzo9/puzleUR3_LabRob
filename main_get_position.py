@@ -1,4 +1,4 @@
-# main.py
+""" Acceder a la posición actual del robot"""
 from ur3_module import UR3Module
 import time
 import shared_data
